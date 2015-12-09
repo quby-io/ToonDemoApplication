@@ -1,0 +1,362 @@
+html {
+    -webkit-user-select: none;
+    margin: 0;
+    height: 100%;
+}
+
+body {
+    font-family: 'Arial';
+    font-weight: 300;
+    margin: 0;
+    font-size: 1em;
+    background-color: #ececec;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+#navbar {
+    font-weight: 600;
+    border-bottom: 1px #c1c1c1 solid;
+    display: block;
+    width: 100%;
+    height: 32px;
+    position: relative;
+}
+
+#navbar .navbarTitle {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 32px;
+    line-height: 32px;
+    vertical-align: middle;
+    text-align: center;
+    font-size: 1em;
+    /* margin: 13px auto 0 auto; */
+    z-index: -5;
+}
+
+#navbar .navbarItem {
+    display: block;
+    height: 32px;
+    line-height: 32px;
+    vertical-align: middle;
+    text-align: center;
+    font-size: 1em;
+    /* margin: 13px auto 0 auto; */
+    z-index: 5;
+    margin-right: 10px;
+    cursor: hand;
+    cursor: pointer;
+}
+
+#navbar .navbarLogo {
+    background: url(../images/quby.svg) center center no-repeat;
+    display: inline-block;
+    height: 32px;
+    width: 32px;
+    vertical-align: middle;
+    background-size: 100% auto;
+}
+
+#navbarLine {
+    height: 1px;
+    width: 100%;
+    background-color: #fff;
+}
+
+/*
+* Thermostat Styling
+*/
+.left {
+    float: left;
+}
+
+.right {
+    float: right;
+}
+
+.clear {
+    clear: both;
+}
+
+#content {
+    display: block;
+    width: 426px;
+    height: 700px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-top: -350px;
+    margin-left: -213px;
+}
+
+#thermostat {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+#thermTemperature {
+    display: block;
+    float: left;
+    width: 66%;
+    height: 30%;
+    background: #fbfbfb;
+    border-top-left-radius: 6px;
+    margin-right: 3px;
+}
+
+#thermPlus {
+    display: block;
+    float: right;
+    width: 32%;
+    height: 14.4%;
+    background: #fff;
+    border-top-right-radius: 6px;
+    box-shadow: 1px 1px 1px #d4d4d4;
+    margin-bottom: 2%;
+}
+
+#thermMinus {
+    display: block;
+    float: right;
+    width: 32%;
+    height: 14.4%;
+    box-shadow: 1px 1px 1px #d4d4d4;
+    background: #fff;
+}
+
+.button.click .thermAdjust {
+    color: #d21242 !important;
+    background: #fbfbfb;
+}
+
+#thermCurrentProgram {
+    display: block;
+    width: 100%;
+    height: 19%;
+    background: #fbfbfb;
+    margin-top: 2%;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    font-size: 25px;
+}
+
+#thermButtons {
+    display: block;
+    width: 100%;
+    height: 46%;
+    margin-top: 4%;
+}
+
+.thermButtonRow {
+    display: block;
+    float: left;
+    width: 100%;
+    height: 49%;
+    margin-top: 3%;
+}
+
+.thermButtonRow.top {
+    margin-top: 0px;
+}
+
+.thermButton {
+    display: block;
+    width: 39%;
+    height: 75%;
+    background: #fff;
+    margin-right: 2%;
+    box-shadow: 1px 1px 1px #d4d4d4;
+    padding: 5% 5% 5% 5%;
+    color: #898989;
+    text-align: center;
+    vertical-align: middle;
+}
+
+#thermTemperature span.thermTemp {
+    /*font-family: 'opensans-regular';*/
+    font-size: 90px;
+    display: block;
+    color: #414141;
+    margin-left: 10%;
+    height: 75%;
+}
+
+#thermTemperature span.heatingIcon {
+    display: block;
+    width: 100%;
+    height: 25%;
+}
+
+.thermButton.click {
+    background: #fbfbfb;
+    box-shadow: 0px 0px 0px;
+}
+
+.thermButton.selected {
+    background: #fbfbfb;
+    box-shadow: 0px 0px 0px #fbfbfb;
+    color: #d21242;
+}
+
+.thermButton.selected span.temp {
+    font-weight: 700 !important;
+}
+
+.thermButton.selected span.scenario {
+    font-weight: 700 !important;
+}
+
+.thermButton span.scenario {
+    width: 100%;
+    display: block;
+    text-align: center;
+    margin-top: 5%;
+    font-size: 30px;
+}
+
+.thermButton span.temp {
+    font-size: 35px;
+    font-weight: 600;
+    width: 100%;
+    display: block;
+    text-align: center;
+    margin-top: 8%;
+}
+
+.thermButton.last {
+    display: block;
+    margin-right: 0px;
+}
+
+.thermButton.topLeft {
+    border-top-left-radius: 6px;
+}
+
+.thermButton.topRight {
+    border-top-right-radius: 6px;
+}
+
+.thermButton.bottomLeft {
+    border-bottom-left-radius: 6px;
+}
+
+.thermButton.bottomRight {
+    border-bottom-right-radius: 6px;
+}
+
+#thermCurrentProgram span.thermProgram, #thermCurrentProgram span.thermState, #thermCurrentProgram span.thermProgramDescription, #thermProgramButton {
+    font-weight: 400;
+    display: block;
+    color: #414141;
+}
+
+#thermCurrentProgram span.thermProgram {
+    margin: 4% 2% 0 5%;
+}
+
+#thermCurrentProgram span.thermState {
+    margin: 4% 10% 0 5%;
+}
+
+#thermCurrentProgram span.thermProgramDescription {
+    margin: 8% 0 3% 5%;
+}
+
+#thermProgramButton {
+    display: block;
+    width: 18.5%;
+    height: 29%;
+    border-radius: 5px;
+    margin: 7% 6% 5% 5%;
+    -webkit-box-shadow: inset 0px 1px 1px 0px rgba(0, 0, 0, 0.27);
+    -moz-box-shadow: inset 0px 1px 1px 0px rgba(0, 0, 0, 0.27);
+    box-shadow: inset 0px 1px 1px 0px rgba(0, 0, 0, 0.27);
+}
+
+#thermProgramButton .square {
+    display: block;
+    width: 45%;
+    height: 94%;
+    background: #ffffff;
+    margin: 1px 1px 1px 1px;
+    border-radius: 5px;
+}
+
+#thermProgramButton.activated .square {
+    float: right;
+}
+
+#thermProgramButton.deactivated .square {
+    float: left;
+}
+
+#thermProgramButton.activated .topline {
+    background: #24932e;
+}
+
+#thermProgramButton.activated {
+    background: #74b72e;
+}
+
+#thermProgramButton.deactivated .topline {
+    background: #636d78;
+}
+
+#thermProgramButton.deactivated {
+    background: #cbd5e2;
+}
+
+#thermPlus span.thermAdjust, #thermMinus span.thermAdjust {
+    display: inline-block;
+    font-size: 3em;
+    color: #898989;
+    height: 100%;
+    width: 100%;
+    line-height: 123%;
+    text-align: center;
+    vertical-align: middle;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#thermPlus span.thermAdjust, #thermMinus span.thermAdjust {
+    display: inline-block;
+    font-size: 80px;
+    color: #898989;
+    height: 100%;
+    width: 100%;
+    line-height: 123%;
+    text-align: center;
+    vertical-align: middle;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#footer {
+    position: absolute;
+    bottom: 0px;
+    display: block;
+    height: 5px;
+    width: 100%;
+    background: #00adef; /* Old browsers */
+    background: -moz-linear-gradient(left, #00adef 0%, #fcfcfc 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, right top, color-stop(0%, #00adef), color-stop(100%, #fcfcfc)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(left, #00adef 0%, #fcfcfc 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(left, #00adef 0%, #fcfcfc 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(left, #00adef 0%, #fcfcfc 100%); /* IE10+ */
+    background: linear-gradient(to right, #00adef 0%, #fcfcfc 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00adef', endColorstr='#fcfcfc', GradientType=1); /* IE6-9 */
+
+}
