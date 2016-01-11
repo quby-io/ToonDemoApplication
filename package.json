@@ -1,19 +1,18 @@
 {
-  "name": "Hackathon",
-  "version": "1.0.0",
-  "description": "Basic Project to get acquainted with hackathon API",
+  "name": "Open-Api-example",
+  "version": "2.0.0",
+  "description": "Basic Project to get acquainted with Toon Open API",
+  "repository": "https://github.com/developer-quby/ToonDemoApplication.git",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js"
   },
-  "author": "Ger Krijnen",
+  "author": "Quby BV",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.10.2",
     "express": "^4.11.1",
-    "express-subdomain": "^1.0.2",
-    "http-proxy": "^1.8.1",
     "method-override": "^2.3.1"
   }
 }

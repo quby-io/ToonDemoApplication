@@ -1,293 +1,65 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>BackBone test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Thermostat API Demo</title>
     <link rel="stylesheet" href="css/style.css">
-    <script src="js/jquery.js"></script>
-    <script src="js/json2.js"></script>
-    <script src="js/underscore.js"></script>
-    <script src="js/backbone.js"></script>
-    <script src="js/APIManager.js"></script>
 </head>
 <body>
-<div id="navbar"></div>
-<div id="navbarLine"></div>
-<div id="content"></div>
-<div id="footer"></div>
-<!-- underscore template for the thermostat widget -->
-<script type="text/template" id="thermostatTemplate">
-    <div id='thermTemperature'>
-        <span class='heatingIcon'></span>
-        <span class='thermTemp'><%= temperature %></span>
+<header class="page-header">
+    <span>Thermostat API Demo</span>
+    <div class="left logo">Quby</div>
+    <nav class="right menu">
+        <a class="menu-item" data-action="login" href="#login">Login</a>
+    </nav>
+</header>
+<aside class="actions">
+    <button class="login" data-action="login">Login</button>
+</aside>
+<main class="content">
+    <div class="thermostat-state">
+        <div class="heating-icon"></div>
+        <div class="temperature">--</div>
+        <div class="set-temperature"></div>
     </div>
-    <div id='thermPlus' class='button <% if(plusClicked){ %> click <% } %>'>
-        <span class='thermAdjust'>+</span>
-    </div>
-    <div id='thermMinus' class='button <% if(minusClicked){ %> click <% } %>'>
-        <span class='thermAdjust'>-</span>
-    </div>
-    <div class='clear'></div>
-    <div id='thermCurrentProgram'>
-        <span class='thermProgram left'>Programma </span>
-        <span class='thermState right'><% if(programActive){ %> Aan <% } else { %> Uit <% } %></span>
+    <button class="thermostat-plus button" data-action="temperature" data-type="up" id="thermPlus">+</button>
+    <button class="thermostat-min button" data-action="temperature" data-type="down" id="thermMinus">-</button>
 
-        <div class='clear'></div>
-        <span class='thermProgramDescription left'><%= programText %></span>
-        <% if(programActive){ %>
-        <div id='thermProgramButton' class='right activated'>
-            <% } else { %>
-            <div id='thermProgramButton' class='right deactivated'>
-                <% } %>
-                <div class='square'></div>
+    <div class="thermostat-program">
+        <div class="row">
+            <div class="row-item name">Program</div>
+            <div class="row-item value">
+                <button data-action="toggleProgram" class="row-item switch"></button>
             </div>
         </div>
-        <div id='thermButtons'>
-            <div class='thermButtonRow top'>
-                <div class='thermButton  topLeft left <% if(setpoint == awayTemp){ %>selected<% } %>'
-                     id='awayButton'>
-                    <span class='temp'><%= awayTempString %></span>
-                    <span class='scenario'>Weg</span>
-                </div>
-                <div class='thermButton  last topRight right  <% if(setpoint == homeTemp){ %>selected<% } %>'
-                     id='homeButton'>
-                    <span class='temp'><%= homeTempString %></span>
-                    <span class='scenario'>Thuis</span>
-                </div>
-            </div>
-            <div class='thermButtonRow'>
-                <div class='thermButton  bottomLeft left  <% if(setpoint == sleepTemp){ %>selected<% } %>'
-                     id='sleepButton'>
-                    <span class='temp'><%= sleepTempString %></span>
-                    <span class='scenario'>Slapen</span>
-                </div>
-                <div class='thermButton  last bottomRight right <% if(setpoint == comfortTemp){ %>selected<% } %>'
-                     id='comfortButton'>
-                    <span class='temp'><%= comfortTempString %></span>
-                    <span class='scenario'>Comfort</span>
-                </div>
-            </div>
+        <div class="state-buttons" data-action="state">
+            <button class="state-button">
+                <span class="temp"></span>
+                <span class="scenario">Comfort</span>
+            </button>
+            <button class="state-button">
+                <span class="temp"></span>
+                <span class="scenario">Home</span>
+            </button>
+            <button class="state-button">
+                <span class="temp"></span>
+                <span class="scenario">Sleep</span>
+            </button>
+            <button class="state-button">
+                <span class="temp"></span>
+                <span class="scenario">Away</span>
+            </button>
         </div>
     </div>
-</script>
-<script>
-    /*
-     * Change these to reflect your WSO2 settings
-     */
-    var baseUrl = "http://127.0.0.1";
-//    var clientId = "VbG1H92KrKBUkDr8ef0HLSwrwisa";
-//    var redirectUri = "http://127.0.0.1/%23/thermostat&response_type=code";
-    var intervalTime = 10000;
-    var minSetpoint = 500;
-    var maxSetpoint = 3000;
 
-    /*
-     * End of settings
-     */
-    var api;
-    var thermostatView;
-    var thermstat;
+</main>
+<footer class="page-footer">
 
-    var Thermostat = Backbone.Model.extend({
-        defaults: {
-            temperature: '20.5&deg;',
-            awayTempString: '12,5&deg',
-            homeTempString: '18,5&deg',
-            sleepTempString: '16,0&deg',
-            comfortTempString: '22,0&deg',
-            awayTemp: 1250,
-            homeTemp: 1850,
-            sleepTemp: 1600,
-            comfortTemp: 2200,
-            setpoint: 2000,
-            actualTemp: 1700,
-            programText: 'Op 18,5&deg;',
-            programActive: false,
-            plusClicked: false,
-            minusClicked: false,
-            stateActive: "0"
-        }
-    });
-    var NavbarSettings = Backbone.Model.extend({
-        defaults: {
-            loginEnabled: true
-        }
-    });
+</footer>
 
-    var NavbarView = Backbone.View.extend({
-        el: $('#navbar'),
-
-        events: {
-            "click #LoginButton": "loginButtonClicked"
-        },
-
-        initialize: function () {
-            this.render("Hackathon Thermostat API Demo");
-        },
-        render: function (title) {
-            var html = "<div class=\"navbarLogo\"></div><div class=\"navbarTitle\">" + title + "</div>";
-            console.log("Login enabled :" + this.model.get('loginEnabled'));
-            if (this.model.get('loginEnabled')) {
-                html += "<div class=\"navbarItem right\" id=\"LoginButton\">Login</a></div>";
-            }
-            $(this.el).html(html);
-            return this;
-        },
-        loginButtonClicked: function (event) {
-            window.location = "http://127.0.0.1/#/thermostat";
-        }
-    });
-
-    var ThermostatView = Backbone.View.extend({
-        el: $('#content'),
-
-        events: {
-            "click .thermButton": "thermButtonClicked",
-            "click #thermCurrentProgram #thermProgramButton": "thermProgramButtonClicked",
-            "click .button": "plusMinusButtonClicked"
-        },
-
-        clickTimeout: null,
-
-        initialize: function () {
-            this.listenTo(this.model, 'change', this.render);
-        },
-        render: function () {
-            var template = _.template($('#thermostatTemplate').html());
-            this.$el.html(template(this.model.toJSON()));
-        },
-        thermButtonClicked: function (e) {
-            var element = $(e.currentTarget);
-            var id = element[0].id;
-            var programActive = this.model.get('programActive');
-            var temp = 0;
-            var state = -1;
-            switch (id) {
-                case "awayButton":
-                    temp = this.model.get('awayTemp');
-                    this.model.set({"setpoint": temp, "programText": "Op " + getTempString(temp), "stateActive": "3"});
-                    if (programActive) {
-                        api.setAwayProgram();
-                    }
-                    break;
-                case "homeButton":
-                    temp = this.model.get('homeTemp');
-                    this.model.set({"setpoint": temp, "programText": "Op " + getTempString(temp), "stateActive": "1"});
-                    if (programActive) {
-                        api.setHomeProgram();
-                    }
-                    break;
-                case "sleepButton":
-                    temp = this.model.get('sleepTemp');
-                    this.model.set({"setpoint": temp, "programText": "Op " + getTempString(temp), "stateActive": "2"});
-                    if (programActive) {
-                        api.setSleepProgram();
-                    }
-                    break;
-                case "comfortButton":
-                    temp = this.model.get('comfortTemp');
-                    this.model.set({"setpoint": temp, "programText": "Op " + getTempString(temp), "stateActive": "0"});
-                    if (programActive) {
-                        api.setComfortProgram();
-                    }
-                    break;
-            }
-            if (!programActive) {
-                api.updateSetpoint(temp);
-            }
-        }
-        ,
-        thermProgramButtonClicked: function () {
-            var programActive = this.model.get('programActive');
-            this.model.set({'programActive': !programActive});
-            if (programActive) {
-                api.enableProgram();
-            } else {
-                api.disableProgram();
-            }
-        }
-        ,
-        plusMinusButtonClicked: function (e) {
-            var element = $(e.currentTarget);
-            var sp = this.model.get('setpoint');
-            if (element[0].id.indexOf("thermPlus") !== -1 && sp < maxSetpoint) {
-                sp += 50;
-                this.model.set({"setpoint": sp, "plusClicked": true, "programText": "Op " + getTempString(sp)});
-            }
-            if (element[0].id.indexOf("thermMinus") !== -1 && sp > minSetpoint) {
-                sp -= 50;
-                this.model.set({"setpoint": sp, "minusClicked": true, "programText": "Op " + getTempString(sp)});
-            }
-            var that = this;
-            // remove the clicked modifier
-            clearTimeout(this.clickTimeout);
-            this.clickTimeout = setTimeout(function () {
-                that.model.set({"plusClicked": false, "minusClicked": false});
-            }, 250);
-            api.updateSetpoint(sp);
-        }
-    });
-
-    var Router = Backbone.Router.extend({
-        routes: {
-            "thermostat": "thermostat",
-            "error": "error",
-            ":*": "loginRoute"
-        }
-    });
-
-    var router = new Router();
-
-    router.on('route:error', function () {
-        console.log("Got error!, should do something more fancy here");
-        var navbarSettings = new NavbarSettings();
-        var navbarView = new NavbarView({model: navbarSettings});
-    });
-
-    router.on('route:thermostat', function () {
-
-        $.getJSON(baseUrl + ":3001/login", function (data) {
-            var obj = JSON.parse(data);
-            if (obj.access_token !== null) {
-                var navbarSettings = new NavbarSettings({loginEnabled: false});
-                var navbarView = new NavbarView({model: navbarSettings});
-                thermstat = new Thermostat();
-                thermostatView = new ThermostatView({model: thermstat});
-
-                api = new APIManager(thermostatView, obj.access_token);
-            } else {
-                console.error("No access token, data : " + data);
-            }
-        });
-    });
-    router.on('route:loginRoute', function () {
-        var navbarSettings = new NavbarSettings();
-        var navbarView = new NavbarView({model: navbarSettings});
-    });
-
-    Backbone.history.start();
-
-    var getTempString = function (temp) {
-        temp = temp / 100.0;
-        tempStr = "";
-        if (temp % 1 == 0)
-            tempStr += temp + ",0";
-        else
-            tempStr += temp;
-        tempStr = tempStr.replace(".", ",");
-        tempStr += "&deg;";
-        return tempStr;
-    };
-
-    function getQueryParam(name) {
-        var url = document.URL;
-        name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
-        var regexS = "[\\?&]" + name + "=([^&#]*)";
-        var regex = new RegExp(regexS);
-        var results = regex.exec(url);
-        return results == null ? null : results[1];
-    }
-</script>
-
-
+<script src="js/jquery.js"></script>
+<script src="js/APIManager.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/script.js"></script>
 </body>
 </html>
