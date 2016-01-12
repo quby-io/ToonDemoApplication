@@ -1,5 +1,6 @@
 # Toon Open Api example Application
 
+The new Toon API is now open for all kinds of products, services and other applications. Get connected and start developing today for the smart homes of tomorrow. In just a few easy steps you can start developing your first Toon solution.
 
 ## How to start
 - Go to http://www.toonapi.com/ and signup for the developer-program
