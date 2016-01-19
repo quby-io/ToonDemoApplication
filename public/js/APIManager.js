@@ -5,7 +5,7 @@ var APIManager = function () {
         self = this;
 
     self.loggedIn = false;
-    self.agreement = null;
+    self.agreements = null;
 
     self.login = function (callback) {
         $.getJSON(baseUrl + ":3001/login", function (data) {
@@ -29,13 +29,13 @@ var APIManager = function () {
     };
 
 
-    self.getAgreement = function (success, error) {
+    self.getAgreements = function (success, error) {
         if (!self.loggedIn) {
             console.warn('You need to have a user-token to use this, try logging in first!');
             return;
         }
-        if (self.agreement) {
-            success(self.agreement);
+        if (self.agreements) {
+            success(self.agreements);
             return;
         }
 
@@ -44,7 +44,7 @@ var APIManager = function () {
             type: 'GET',
             dataType: 'json',
             success: function (data) {
-                self.agreement = data;
+                self.agreements = data;
                 success(data);
             },
             error: error
@@ -52,30 +52,24 @@ var APIManager = function () {
 
     };
 
-    self.setAgreement = function (agreement) {
+    self.selectAgreement = function (agreementId, success, error) {
         if (!self.loggedIn) {
             console.warn('You need to have a user-token to use this, try logging in first!');
             return;
         }
-        if (self.agreement) {
-            self.agreement = agreement;
-        }
+        var agreementObject = {
+            agreementId : agreementId
+        };
 
         $.ajax({
             url: apiUrl + '/agreements',
             type: 'POST',
-            dataType: 'json',
+            dataType: 'text',
             contentType: 'application/json',
-            data: JSON.stringify(self.agreement),
-            success: function (data) {
-                console.log(data);
-            },
-            error: function (e) {
-                console.log("Error while updating scheme State : " + JSON.stringify(e, null, 4));
-            }
+            data: JSON.stringify(agreementObject),
+            success: success,
+            error: error
         });
-
-        return self.agreement;
     };
 
     self.getStatus = function (success, error) {

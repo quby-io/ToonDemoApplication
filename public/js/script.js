@@ -18,6 +18,31 @@ $("[data-action=temperature]").on('click', temperatureChange);
 function login(event) {
     event.preventDefault();
     api.login(function () {
+        // It is possible to have more than one display per customer, if that is the case, we are showing the agreements
+        // and the user has to pick one. (If not, just select the first one)
+        api.getAgreements(function(agreements) {
+            switch (agreements.length) {
+                case 0:
+                    console.error('There are no agreements registered for this user. Contact support');
+                    break;
+                case 1:
+                    selectAgreement(agreements[0].agreementId);
+                    break;
+                default:
+                    showAgreements(agreements);
+            }
+        })
+
+    });
+}
+
+function showAgreements(agreements) {
+    //This should display the agreements, and the user does the selection.
+    console.log(agreements);
+}
+
+function selectAgreement(agreementId) {
+    api.selectAgreement(agreementId, function() {
         $('.content').show();
         $('aside.actions').hide();
 
