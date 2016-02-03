@@ -42,7 +42,9 @@ StatusUpdater.prototype = {
         }, this.pauseInterval);
     },
     statusError: function (error) {
-        console.error(error);
+        if(error.status != 200) {
+            console.error(error);
+        }
     }
 };
 
@@ -50,7 +52,7 @@ function formatTemperature(temp) {
     if (temp / 100 > 1) {
         temp = temp / 100;
     }
-    tempStr = "";
+    var tempStr = "";
     if (temp % 1 == 0)
         tempStr += temp + ",0";
     else
