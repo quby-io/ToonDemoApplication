@@ -116,7 +116,7 @@ var APIManager = function () {
             dataType: 'text',
             contentType: 'application/json',
             data: JSON.stringify({
-                "scale": "C",
+                "scale": "CELSIUS",
                 value: setpoint
             }),
             success: function () {
