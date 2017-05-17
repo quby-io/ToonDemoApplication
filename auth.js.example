@@ -1,0 +1,11 @@
+/*
+ * You have received a username and password with your key and secret, these are credentials for a Toon Account.
+ * These credentials you have to ask the customer in the future with a OAUTH-request.
+ */
+
+module.exports = {
+  APIKEY : "", //Fill in supplied Key
+  APISECRET : "", //Fill in supplied Secret
+  username : "",
+  password : "",
+};
