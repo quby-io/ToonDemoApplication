@@ -6,23 +6,13 @@ var express = require('express'),
     app = express(),
     api = express(),
     http = require('http'),
-    https = require('https');
-
-
-/**
- * You have received a username and password with your key and secret, these are credentials for a Toon Account.
- * These credentials you have to ask the customer in the future with a OAUTH-request.
- */
-
-const APIKEY = ""; //Fill in supplied Key
-const APISECRET = ""; //Fill in supplied Secret
-var username = "";
-var password = "";
+    https = require('https'),
+    auth = new require('./auth');
 
 const SERVERPORT = 3001;
 const WEBPORT = 8080;
 
-if (!APIKEY || !APISECRET) {
+if (!auth.APIKEY || !auth.APISECRET) {
     console.error('You haven\'t supplied the application with the needed APIKEY or APISECRET credentials');
     process.exit(1);
 }
@@ -42,18 +32,18 @@ process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
 api.get('/login', function (req, res) {
 
     console.log('Received a request for a new token!');
-    username = username || req.body.username;
-    password = password || req.body.password;
+    auth.username = auth.username || req.body.username;
+    auth.password = auth.password || req.body.password;
 
-    if (!username || !password) {
+    if (!auth.username || !auth.password) {
         res.status(500);
         res.send('Username or Password is missing!');
         return;
     }
 
     var postData = querystring.stringify({
-        'username': username,
-        'password': password,
+        'username': auth.username,
+        'password': auth.password,
         'grant_type': 'password'
     });
 
@@ -68,7 +58,7 @@ api.get('/login', function (req, res) {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Content-Length': Buffer.byteLength(postData),
-            'Authorization': 'Basic ' + new Buffer(APIKEY + ":" + APISECRET).toString('base64')
+            'Authorization': 'Basic ' + new Buffer(auth.APIKEY + ":" + auth.APISECRET).toString('base64')
         }
     };
 
