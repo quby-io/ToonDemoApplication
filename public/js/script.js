@@ -1,6 +1,7 @@
 var api = new APIManager();
 var temperatureInfo = null;
 var updater = null;
+var selectedAgreementId = null;
 
 if (!api.loggedIn) {
     $('.content').hide();
@@ -17,21 +18,26 @@ $("[data-action=temperature]").on('click', temperatureChange);
 
 function login(event) {
     event.preventDefault();
-    api.login(function () {
+    api.login(() => {
         // It is possible to have more than one display per customer, if that is the case, we are showing the agreements
         // and the user has to pick one. (If not, just select the first one)
-        api.getAgreements(function(agreements) {
-            switch (agreements.length) {
-                case 0:
-                    console.error('There are no agreements registered for this user. Contact support');
-                    break;
-                case 1:
-                    selectAgreement(agreements[0].agreementId);
-                    break;
-                default:
-                    showAgreements(agreements);
+        api.getAgreements((agreements, error) => {
+            if (error) {
+                console.log(error);
+            } else {
+                console.log(agreements);
+                switch (agreements.length) {
+                    case 0:
+                        console.error('There are no agreements registered for this user. Contact support');
+                        break;
+                    case 1:
+                        selectAgreement(agreements[0].agreementId);
+                        break;
+                    default:
+                        showAgreements(agreements);
+                }
             }
-        })
+        });
 
     });
 }
@@ -42,15 +48,13 @@ function showAgreements(agreements) {
 }
 
 function selectAgreement(agreementId) {
-    api.selectAgreement(agreementId, function() {
-        $('.content').show();
-        $('aside.actions').hide();
+    $('.content').show();
+    $('aside.actions').hide();
 
-        initProgramStates();
+    selectedAgreementId = agreementId;
 
-        //Enable the interval-update!
-        updater = new StatusUpdater(statusParser);
-    });
+    //Enable the interval-update!
+    updater = new StatusUpdater(agreementId, statusParser);
 }
 
 function changeState(event) {
@@ -59,12 +63,12 @@ function changeState(event) {
     var button = $(event.currentTarget);
     var buttons = button.parent().find("button");
 
-    buttons.removeClass('selected');
+    buttons.removeClass("selected");
     button.addClass('selected');
 
-    updater.pause(function () {
+    updater.pause(() => {
         //send the call to the api
-        api.setDisplayToState(0, button.index());
+        api.setDisplayToState(selectedAgreementId, button.index(), 0);
     });
 }
 
@@ -76,14 +80,13 @@ function toggleProgram(event) {
 
     $('.thermostat-program .switch').toggleClass('active');
 
-    updater.pause(function () {
+    updater.pause(() => {
         //send the call to the api
-        api.setProgram(!state);
+        api.setProgram(selectedAgreementId, !state);
     });
 }
 
 function temperatureChange(event) {
-
     if ($(event.currentTarget).data('type') == "up") {
         temperatureInfo.currentSetpoint += 50;
     } else {
@@ -92,17 +95,10 @@ function temperatureChange(event) {
 
     $('.temperature').html(formatTemperature(temperatureInfo.currentSetpoint));
 
-    updater.pause(function () {
+    updater.pause(() => {
         //send the call to the api
-        api.setTemperature(temperatureInfo.currentSetpoint);
+        api.setTemperature(selectedAgreementId, temperatureInfo.currentSetpoint);
     });
-}
-
-function initProgramStates() {
-    var error = function (error) {
-        console.log(error);
-    };
-    api.getProgramStates(programEvent, error);
 }
 
 function statusParser(update) {
@@ -116,7 +112,6 @@ function statusParser(update) {
     if (update.thermostatStates) {
         programEvent(update.thermostatStates);
     }
-
 }
 
 function temperatureEvent(info) {
@@ -138,6 +133,8 @@ function temperatureEvent(info) {
     }
     if (info.activeState != -1) {
         $('.state-buttons .state-button:nth(' + info.activeState + ')').addClass('selected');
+    } else {
+        $('.state-buttons .state-button:nth(' + info.activeState + ')').removeClass('selected');
     }
 
     $('.temperature').html(temp);

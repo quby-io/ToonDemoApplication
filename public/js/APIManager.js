@@ -1,14 +1,14 @@
 var APIManager = function () {
     var token,
         baseUrl = "//" + window.location.hostname,
-        apiUrl = "https://api.toonapi.com/toon/api/v1",
+        apiUrl = "https://api.toon.eu/toon/v3",
         self = this;
 
     self.loggedIn = false;
     self.agreements = null;
 
-    self.login = function (callback) {
-        $.getJSON(baseUrl + ":3001/login", function (data) {
+    self.login = (callback) => {
+        $.getJSON(baseUrl + ":3001/login", (data) => {
             var obj = JSON.parse(data);
             if (obj.access_token !== null) {
                 self.token = obj.access_token;
@@ -29,13 +29,13 @@ var APIManager = function () {
     };
 
 
-    self.getAgreements = function (success, error) {
+    self.getAgreements = (cb) => {
         if (!self.loggedIn) {
             console.warn('You need to have a user-token to use this, try logging in first!');
             return;
         }
         if (self.agreements) {
-            success(self.agreements);
+            cb(self.agreements);
             return;
         }
 
@@ -43,43 +43,25 @@ var APIManager = function () {
             url: apiUrl + '/agreements',
             type: 'GET',
             dataType: 'json',
-            success: function (data) {
+            success: (data) => {
                 self.agreements = data;
-                success(data);
+                cb(data);
             },
-            error: error
+            error: (data) => {
+                cb(null, data.responseText);
+            }
         });
 
     };
 
-    self.selectAgreement = function (agreementId, success, error) {
-        if (!self.loggedIn) {
-            console.warn('You need to have a user-token to use this, try logging in first!');
-            return;
-        }
-        var agreementObject = {
-            agreementId : agreementId
-        };
-
-        $.ajax({
-            url: apiUrl + '/agreements',
-            type: 'POST',
-            dataType: 'text',
-            contentType: 'application/json',
-            data: JSON.stringify(agreementObject),
-            success: success,
-            error: error
-        });
-    };
-
-    self.getStatus = function (success, error) {
+    self.getStatus = (agremeentId, success, error) => {
         if (!self.loggedIn) {
             console.warn('You need to have a user-token to use this, try logging in first!');
             return;
         }
 
         $.ajax({
-            url: apiUrl + '/status',
+            url: apiUrl + '/' + agremeentId + '/status',
             type: 'GET',
             dataType: 'json',
             success: success,
@@ -88,14 +70,14 @@ var APIManager = function () {
 
     };
 
-    self.getTemperature = function (success, error) {
+    self.getThermostat = (agreementId, success, error) => {
         if (!self.loggedIn) {
             console.warn('You need to have a user-token to use this, try logging in first!');
             return;
         }
 
         $.ajax({
-            url: apiUrl + '/temperature',
+            url: apiUrl + '/' + agreementId+ '/thermostat',
             type: 'GET',
             dataType: 'json',
             success: success,
@@ -103,89 +85,68 @@ var APIManager = function () {
         });
     };
 
-    self.setTemperature = function (setpoint) {
+    self.setTemperature =  (agreementId, setpoint) => {
         if (!self.loggedIn) {
             console.warn('You need to have a user-token to use this, try logging in first!');
             return;
         }
         console.log('Setting Temperature to: ' + setpoint);
 
-        $.ajax({
-            url: apiUrl + '/temperature',
-            type: 'PUT',
-            dataType: 'text',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                "scale": "CELSIUS",
-                value: setpoint
-            }),
-            success: function () {
-                console.log("New setpoint accepted by API");
-            },
-            error: function (e) {
-                console.log("Error while updating setpoint : " + JSON.stringify(e, null, 4));
-            }
+        self.getThermostat(agreementId, (currentState) => {
+            currentState.currentSetpoint = setpoint;
+
+            $.ajax({
+                url: apiUrl + '/' + agreementId + '/thermostat',
+                type: 'PUT',
+                dataType: 'text',
+                contentType: 'application/json',
+                data: JSON.stringify(
+                    currentState
+                ),
+                success: () => {
+                    console.log("New setpoint accepted by API");
+                },
+                error: (e) => {
+                    console.log("Error while updating setpoint : " + JSON.stringify(e, null, 4));
+                }
+            });
+        }, (error) => {
+            console.log(error);
         });
     };
 
-    self.getProgramStates = function (success, error) {
-        if (!self.loggedIn) {
-            console.warn('You need to have a user-token to use this, try logging in first!');
-            return;
-        }
-
-        $.ajax({
-            url: apiUrl + '/temperature/states',
-            type: 'GET',
-            dataType: 'json',
-            success: success,
-            error: error
-        });
-
-    };
-
-    self.setComfort = function () {
-        self.setDisplayToState(0, 0);
-    };
-    self.setHome = function () {
-        self.setDisplayToState(0, 1);
-    };
-    self.setSleep = function () {
-        self.setDisplayToState(0, 2);
-    };
-    self.setAway = function () {
-        self.setDisplayToState(0, 3);
-    };
-
-    self.setProgram = function (enabled) {
+    self.setProgram = (agreementId, enabled) => {
         if (enabled) {
-            self.setDisplayToState(0, 6);
+            self.setDisplayToState(agreementId, -1, 1/*Program on*/);
         } else {
-            self.setDisplayToState(1, 5);
+            self.setDisplayToState(agreementId, -1, 0/*Program off*/);
         }
     };
 
-    self.setDisplayToState = function (state, temperatureState) {
+    self.setDisplayToState = (agreementId, activeState, programState) => {
+        console.log("setDisplayToState activeState: " + activeState + " programState: " + programState);
         if (!self.loggedIn) {
             console.warn('You need to have a user-token to use this, try logging in first!');
             return;
         }
 
-        $.ajax({
-            url: apiUrl + '/temperature/states',
-            type: 'PUT',
-            dataType: 'text',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                state: state,
-                temperatureState: temperatureState
-            }),
-            success: function () {
-                console.log("New schemeState accepted by API");
-            },
-            error: function (e) {
-                console.log("Error while updating scheme State : " + JSON.stringify(e, null, 4));
-            }
+        self.getThermostat(agreementId, (currentState) => {
+            currentState.activeState = activeState;
+            currentState.programState = programState;
+            
+            $.ajax({
+                url: apiUrl + '/' + agreementId + '/thermostat',
+                type: 'PUT',
+                dataType: 'text',
+                contentType: 'application/json',
+                data: JSON.stringify(currentState),
+                success: () => {
+                    console.log("New schemeState accepted by API");
+                },
+                error: (e) => {
+                    console.log("Error while updating scheme State : " + JSON.stringify(e, null, 4));
+                }
+            });
         });
     };
 };

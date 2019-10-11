@@ -7,33 +7,34 @@ var api = new APIManager();
  * @param success
  * @constructor
  */
-function StatusUpdater(success) {
-    this.updateInterval = 1000;
-    this.pauseInterval = 500;
+function StatusUpdater(agreementId, success) {
+    this.updateInterval = 2000;
+    this.pauseInterval = 1000;
     this.success = success;
+    this.agreementId = agreementId;
 
     this.start();
 }
 StatusUpdater.prototype = {
-    start: function () {
+    start: () => {
         console.log('Started the status updater');
 
         var self = this;
 
-        this.updateTimer = setInterval(function () {
-            api.getStatus(self.success, self.statusError);
+        this.updateTimer = setInterval(() => {
+            api.getStatus(self.agreementId, self.success, self.statusError);
         }, this.updateInterval);
     },
-    stop: function () {
+    stop: () => {
         console.log('Stopped the status updater');
         clearInterval(this.updateTimer);
     },
-    pause: function (pauseAction) {
+    pause: (pauseAction) => {
         var self = this;
         this.stop();
 
         clearTimeout(this.pauseTimer);
-        this.pauseTimer = setTimeout(function () {
+        this.pauseTimer = setTimeout(() => {
 
             pauseAction();
 
@@ -41,7 +42,7 @@ StatusUpdater.prototype = {
             self.start();
         }, this.pauseInterval);
     },
-    statusError: function (error) {
+    statusError: (error) => {
         if(error.status != 200) {
             console.error(error);
         }
