@@ -1,12 +1,12 @@
 {
-  "name": "Open-Api-example",
+  "name": "Toon-API-example",
   "version": "2.0.0",
-  "description": "Basic Project to get acquainted with Toon Open API",
+  "description": "Basic Project to get acquainted with ToonAPI",
   "repository": "https://github.com/developer-quby/ToonDemoApplication.git",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js"
+    "start": "jshint *.js public/js/APIManager.js public/js/script.js public/js/utils.js && node app.js"
   },
   "author": "Quby BV",
   "license": "ISC",
@@ -14,5 +14,8 @@
     "body-parser": "^1.10.2",
     "express": "^4.11.1",
     "method-override": "^2.3.1"
+  },
+  "devDependencies": {
+    "jshint": "^2.10.2"
   }
 }
