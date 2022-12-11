@@ -12,7 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.10.2",
-    "express": "^4.11.1",
+    "express": "^4.17.3",
     "method-override": "^2.3.1"
   },
   "devDependencies": {
